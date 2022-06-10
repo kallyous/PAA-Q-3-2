@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <stack>
 
 /* Problema do ordenamento dos times de forma que o time à esquerda na lista venceu o sime seguinte à sua direita.
  * Este problema assume a competição em um jogo onde não ocorrem empates e cada time jogou contra todos os outros times.
@@ -25,7 +26,8 @@
 
 
 
-void orderTeams(int team_count, int* team_list, int** victory_matrix) {
+std::stack<int> * orderTeams(int team_count, int curr_index, int* team_list, int** victory_matrix) {
+   /* DEBUG: Exibe tudo que foi recebido nos aargumentos.
    std::cout << "Team Count: " << team_count << '\n';
    std::cout << "Team List:\n\t";
    for (int i=0; i<team_count; i++) std::cout << " " << team_list[i];
@@ -34,8 +36,12 @@ void orderTeams(int team_count, int* team_list, int** victory_matrix) {
       for (int i=0; i < team_count; i++)
          std::cout << " " << victory_matrix[i][j];
       std::cout << '\n';
-   }
-   return;
+   } */
+
+   // Chegou ao final da lista.
+   if (curr_index == team_count) return NULL;
+
+   return NULL;
 }
 
 
@@ -85,11 +91,14 @@ int main(int argc, char* argv[]) {
    //DEBUG: Exibe quantidade de times descrito no arquivo que lista as vitórias
    std::cout << "Times: " << buffer << '\n';
 
-   int size = atoi(buffer);                              // Tamanho da matriz de vitórias.
-   int victories[size][size];                            // Alloca matriz de vitórias.
-   for (int i=0; i < size; i++) victories[i][i] = -1;    // Mete -1 na diagonal principal porque foda-se, um time não joga contra si mesmo.
-   std::string substr_win, substr_lose;                  // Buffer pra ir lendo os times a cada linha lida.
-   int winner, loser;                                    // Para cada partida sendo interpretada, recebem os números dos times.
+   int size = atoi(buffer);              // Tamanho da matriz de vitórias.
+   int** victories = new int* [size];    // Prepara base da matriz de vitórias. `int victories[size][size];` não passa como argumento.
+   for (int y=0; y < size; y++)
+      victories[y] = new int[size];      // Alloca as linhas.
+   for (int i=0; i < size; i++)
+      victories[i][i] = -1;              // Mete -1 na diagonal principal porque foda-se, um time não joga contra si mesmo.
+   std::string substr_win, substr_lose;  // Buffer pra ir lendo os times a cada linha lida.
+   int winner, loser;                    // Para cada partida sendo interpretada, recebem os números dos times.
 
    /* Todos as classes de stream descendem de std::basic_ios e por isso tem acesso ao método std::basic_ios::fail().
     * Quando std::ifstream::getline() tenta ler além do final de um arquivo aberto, ele chama std::basic_ios::setstate(std::basic_ios::eofbit).
@@ -151,10 +160,8 @@ int main(int argc, char* argv[]) {
       }
 
       // Faz a busca em profundidade.
-      orderTeams(size, teams, victories);
+      orderTeams(size, 0, teams, victories);
    }
-
-
 
    return 0;
 }

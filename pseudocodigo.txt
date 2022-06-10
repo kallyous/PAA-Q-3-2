@@ -1,0 +1,22 @@
+def ordenarTimes(vetor times, int prox, vetor solução, matriz vitorias):
+
+	solução_nova = vetor []
+
+	se times.tam < 1: retorne solução
+
+	senão se solução.tam == 0:
+		para i = 0 -> times.tam:
+			prox = times[i]
+			times_reman = times[:i] + times[i+1:]
+			solução_nova = ordenarTimes(times_reman, prox, solução, vitorias)
+			se solução_nova.tam > 0: quebre
+
+	senão se vitorias[solução[-1]][prox] == solução[-1]:
+		solução += [prox]
+		para i = 0 -> times.tam:
+			prox = times[i]
+			times_reman = times[:i] + times[i+1:]
+			solução_nova = ordenarTimes(times_reman, prox, solução, vitorias)
+			se solução_nova > 0: quebre
+
+	retorne solução_nova
