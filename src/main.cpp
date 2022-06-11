@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <vector>
 
+
+
 /* Problema do ordenamento dos times de forma que o time à esquerda na lista venceu o sime seguinte à sua direita.
  * Este problema assume a competição em um jogo onde não ocorrem empates e cada time jogou contra todos os outros times.
  *
@@ -24,11 +26,6 @@
  *    Um comjunto de números representando os respectivos times, em uma lista ordenada tal que o time à esquerda venceu o time à direita.
 */
 
-
-void printVec(std::vector<int> vec) {
-   for (int val : vec) std::cout << " " << val;
-   std::cout << '\n';
-}
 
 
 std::vector<int> orderTeams(const std::vector<int> teams, const int _next, const std::vector<int> solution, int** victory_matrix) {
@@ -138,7 +135,7 @@ int main(int argc, char* argv[]) {
    file_victory_tab.getline(buffer, BUFFER_LENGTH);
 
    //DEBUG: Exibe quantidade de times descrito no arquivo que lista as vitórias
-   std::cout << "Times: " << buffer << '\n';
+   //std::cout << "Times: " << buffer << '\n';
 
    int size = atoi(buffer);              // Tamanho da matriz de vitórias.
    int** victories = new int* [size];    // Prepara base da matriz de vitórias. `int victories[size][size];` não passa como argumento.
@@ -177,7 +174,7 @@ int main(int argc, char* argv[]) {
       }
    }
 
-   // DEBUG: Exibe matriz de vitórias construída.
+   // INFO: Exibe matriz de vitórias lida.
    std::cout << "Matriz de vitórias:\n";
    for (int j=0; j < size; j++) {
       for (int i=0; i < size; i++) {
@@ -189,17 +186,17 @@ int main(int argc, char* argv[]) {
 
    // #3 PROCESSAMENTO DAS INSTÂNCIAS
 
+   // String pra segurar a sequência sendo interpretada.
    std::string str_seq;
 
    // Laço para ordenar todas as entradas fornecidas pelo arquivo de sequências fornecido.
    while(file_sequences.good()) {
 
       file_sequences.getline(buffer, BUFFER_LENGTH);
-      str_seq = std::string(buffer);                     // Converte em string C++ pra ter acesso rápido à funçãop de comprimento da string.
-      if (str_seq.length() < 1) break;                   // Pra num precisar da bixiga de um try-catch por causa da string vazia na última iteração do laço.
-      std::cout << "Ordenando " << str_seq << " ...\n";  // DEBUG: Exibe o que vai ser ordenado.
+      str_seq = std::string(buffer);                       // Converte em string C++ pra ter acesso rápido à funçãop de comprimento da string.
+      if (str_seq.length() < 1) break;                     // Pra num precisar da bixiga de um try-catch por causa da string vazia na última iteração do laço.
+      //std::cout << "Ordenando " << str_seq << " ...\n";  // DEBUG: Exibe o que vai ser interpretado.
 
-      //int teams[str_seq.length()];
       std::vector<int> teams;                    // Vetor para colocar os times na ordem de leitura da sequência atual da instância.
       std::vector<int> solution;                 // Vetor para receber a solução.
       std::stringstream curr_seq_line(str_seq);  // String Stream pra ir lendo os times da linha que descreve a sequência atual.
@@ -208,19 +205,19 @@ int main(int argc, char* argv[]) {
       // Pega os times na ordem recebida. Lembrando que 'size' é a quantidade de times (tamanho da entrada).
       for(int i=0; i < size; i++) {
          std::getline(curr_seq_line, substr, ' ');
-         //teams[i] = stoi(substr);
          teams.push_back(stoi(substr));
       }
 
-      // Invoca algoritmo central e encontra solução. O -1 marca a chamada inicial do algoritmo, já que 0 é um time válido.
+      /* ALGORITMO: Invoca algoritmo central para encontrar a solução.
+       * O segundo argumento (next) com -1 marca a chamada inicial do algoritmo, já que 0 é um time válido. */
       solution = orderTeams(teams, -1, solution, victories);
 
-      // DEBUG: Teste de construção da entrada.
-      std::cout << "Entrada interpretada: [";
+      // INFO: Entrada entendida.
+      std::cout << "Entrada: [";
       for (int val : teams) std::cout << " " << val;
       std::cout << " ]\n";
 
-      // DEBUG: Deixa eu ver essa merda.
+      // INFO: Deixa eu ver essa merda.
       std::cout << "Resultado: [";
       for (int val : solution) std::cout << " " << val;
       std::cout << " ]\n";
