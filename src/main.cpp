@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <stack>
+#include <vector>
 
 /* Problema do ordenamento dos times de forma que o time à esquerda na lista venceu o sime seguinte à sua direita.
  * Este problema assume a competição em um jogo onde não ocorrem empates e cada time jogou contra todos os outros times.
@@ -25,23 +25,71 @@
 */
 
 
-
-std::stack<int> * orderTeams(int team_count, int curr_index, int* team_list, int** victory_matrix) {
-   /* DEBUG: Exibe tudo que foi recebido nos aargumentos.
-   std::cout << "Team Count: " << team_count << '\n';
-   std::cout << "Team List:\n\t";
-   for (int i=0; i<team_count; i++) std::cout << " " << team_list[i];
+void printVec(std::vector<int> vec) {
+   for (int val : vec) std::cout << " " << val;
    std::cout << '\n';
-   for (int j=0; j < team_count; j++) {
-      for (int i=0; i < team_count; i++)
-         std::cout << " " << victory_matrix[i][j];
-      std::cout << '\n';
-   } */
+}
 
-   // Chegou ao final da lista.
-   if (curr_index == team_count) return NULL;
 
-   return NULL;
+std::vector<int> orderTeams(const std::vector<int> teams, const int _next, const std::vector<int> solution, int** victory_matrix) {
+
+   /* DEBUG: Para acompanhar os passos.
+   std::cout << "\nTeams: ";
+   printVec(teams);
+   std::cout << "Next: " << _next << '\n';
+   std::cout << "Solution: ";
+   printVec(solution); */
+
+   // solução_nova = vetor []
+   std::vector<int> new_solution;
+
+   // Pra não ter que executar solution.back() quatro vezes por iteração...
+   //int prev = solution.back();
+
+   int next;
+   if (_next == -1) {
+      for (int i=0; i < teams.size(); i++) {
+         std::vector<int> teams_left = teams;
+         teams_left.erase(teams_left.begin()+i);
+         new_solution = orderTeams(teams_left, teams[i], solution, victory_matrix);
+         if (!new_solution.empty()) return new_solution;
+      }
+   }
+   next = _next;
+
+   // se times.tam == 0 e solução.tam > 0 e vitorias[solução[-1]][prox]:
+   if (teams.empty() && !solution.empty() && victory_matrix[solution.back()][next] == solution.back()) {
+      // retorne solução + [prox]
+      new_solution = solution;
+      new_solution.push_back(next);
+   }
+
+   // senão se times.tam == 1 e solução.tam == 0: retorne times
+   else if (teams.size() == 1 && solution.empty()) return teams;
+
+   // senão se solução.tam == 0 ou vitorias[solução[-1]][prox] == solução[-1]:
+   else if (solution.empty() || victory_matrix[solution.back()][next] == solution.back()) {
+
+      // Tem que criar a nova solução atual aqui, solução += [prox]
+      std::vector<int> curr_solution = solution;
+      curr_solution.push_back(next);
+
+      // para i = 0 -> times.tam:
+      for (int i=0; i < teams.size(); i++) {
+
+         // times_reman = times[:i] + times[i+1:]
+         std::vector<int> teams_left = teams;
+         teams_left.erase(teams_left.begin()+i);  // Esquisitice de iteradores do C++ ...
+
+         // solução_nova = ordenarTimes(times_reman, times[i], solução += [prox], vitorias)
+         new_solution = orderTeams(teams_left, teams[i], curr_solution, victory_matrix);
+
+         // se solução_nova.tam > 0: quebre
+         if (!new_solution.empty()) break;
+      }
+   }
+
+   return new_solution;
 }
 
 
@@ -144,23 +192,38 @@ int main(int argc, char* argv[]) {
 
    // Laço para ordenar todas as entradas fornecidas pelo arquivo de sequências fornecido.
    while(file_sequences.good()) {
+
       file_sequences.getline(buffer, BUFFER_LENGTH);
       str_seq = std::string(buffer);                     // Converte em string C++ pra ter acesso rápido à funçãop de comprimento da string.
       if (str_seq.length() < 1) break;                   // Pra num precisar da bixiga de um try-catch por causa da string vazia na última iteração do laço.
       std::cout << "Ordenando [" << str_seq << "]:\n";   // DEBUG: Exibe o que vai ser ordenado.
 
-      int teams[str_seq.length()];               // Cria uma array para colocar os times na ordem de leitura da sequência atual da instância.
-      std::stringstream curr_seq_line(str_seq);  // Cria um String Stream pra ir lendo os times da linha que descreve a sequência atual.
+      //int teams[str_seq.length()];
+      std::vector<int> teams;                    // Vetor para colocar os times na ordem de leitura da sequência atual da instância.
+      std::vector<int> solution;                 // Vetor para receber a solução.
+      std::stringstream curr_seq_line(str_seq);  // String Stream pra ir lendo os times da linha que descreve a sequência atual.
       std::string substr;                        // Pra agarrar de dentro do buffer_str_stream a substring com o número do time.
 
-      // Pega os times na ordem recebida.
-      for(int i=0; i < str_seq.length(); i++) {
+      // Pega os times na ordem recebida. Lembrando que 'size' é a quantidade de times (tamanho da entrada).
+      for(int i=0; i < size; i++) {
          std::getline(curr_seq_line, substr, ' ');
-         teams[i] = stoi(substr);
+         //teams[i] = stoi(substr);
+         teams.push_back(stoi(substr));
       }
 
-      // Faz a busca em profundidade.
-      orderTeams(size, 0, teams, victories);
+      // Invoca algoritmo central e encontra solução. O -1 marca a chamada inicial do algoritmo, já que 0 é um time válido.
+      solution = orderTeams(teams, -1, solution, victories);
+
+      // DEBUG: Teste de construção da entrada.
+      std::cout << "\nEntrada: ";
+      for (int val : teams) std::cout << " " << val;
+      std::cout << '\n';
+
+      // DEBUG: Deixa eu ver essa merda.
+      std::cout << "Resultado: ";
+      for (int val : solution) std::cout << " " << val;
+      std::cout << '\n';
+
    }
 
    return 0;

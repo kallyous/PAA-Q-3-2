@@ -2,30 +2,29 @@ ALGORITMO
 
 def ordenarTimes(vetor times, int prox, vetor solução, matriz vitorias):
 
-1	solução_nova = vetor []
+	solução_nova = vetor []
 
-2	se times.tam < 1: retorne solução
-3	se times.tam == 1 e solução.tam == 0: retorne times
+	se times.tam == 0 e solução.tam > 0 e vitorias[solução[-1]][prox]:
+		retorne solução + [prox]
 
-4	se solução.tam == 0:
-5		para i = 0 -> times.tam:
-6			solução += [times[i]]
-7			times_reman = times[:i] + times[i+1:]
-8			solução_nova = ordenarTimes(times_reman, 0, solução, vitorias)
-9			se solução_nova.tam > 0: quebre
+	senão se times.tam == 1 e solução.tam == 0: retorne times
 
-10	senão se vitorias[solução[-1]][prox] == solução[-1]:
-11		solução += [prox]
-12		para i = 0 -> times.tam:
-13			prox = times[i]
-14			times_reman = times[:i] + times[i+1:]
-15			solução_nova = ordenarTimes(times_reman, prox, solução, vitorias)
-16			se solução_nova > 0: quebre
+	senão se solução.tam == 0 ou vitorias[solução[-1]][prox] == solução[-1]:
+		para i = 0 -> times.tam:
+			times_reman = times[:i] + times[i+1:]
+			solução_nova = ordenarTimes(times_reman, times[i], solução += [prox], vitorias)
+			se solução_nova.tam > 0: quebre
 
-17	retorne solução_nova
+	retorne solução_nova
 
 
 CORRETUDE
+
+Seja times = [t1, t2, ... tn, ...] o vetor de times a ser ordenado.
+
+Invariante de laço para ambos os laços em (5) e em (12):
+	Quando o valor de prox = tj e solução = [..., ti], então solução_nova = [..., ti, tj] se ti venceu tj.
+	O valor de times_reman é o vetor formado pelos elementos de times menos tj.
 
 1. Casos base:
 	Quando o tamanho da instância é 0:
