@@ -35,17 +35,16 @@ std::vector<int> orderTeams(const std::vector<int> teams, const int _next, const
 
    /* DEBUG: Para acompanhar os passos.
    std::cout << "\nTeams: ";
-   printVec(teams);
-   std::cout << "Next: " << _next << '\n';
+   for (int val : teams) std::cout << " " << val;
+   std::cout << "\nNext: " << _next << '\n';
    std::cout << "Solution: ";
-   printVec(solution); */
+   for (int val : solution) std::cout << " " << val;
+   std::cout << '\n'; */
 
    // solução_nova = vetor []
    std::vector<int> new_solution;
 
-   // Pra não ter que executar solution.back() quatro vezes por iteração...
-   //int prev = solution.back();
-
+   // Caso especial de inicialização do algoritmo. Como 0 é um time válido, usamos -1 como raiz da árvore.
    int next;
    if (_next == -1) {
       for (int i=0; i < teams.size(); i++) {
@@ -55,6 +54,8 @@ std::vector<int> orderTeams(const std::vector<int> teams, const int _next, const
          if (!new_solution.empty()) return new_solution;
       }
    }
+
+   // Se esta iteração não for -1, então já descemos da raiz e a inicialização já foi feita.
    next = _next;
 
    // se times.tam == 0 e solução.tam > 0 e vitorias[solução[-1]][prox]:
