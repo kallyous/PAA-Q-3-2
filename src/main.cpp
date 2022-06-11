@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
       file_sequences.getline(buffer, BUFFER_LENGTH);
       str_seq = std::string(buffer);                     // Converte em string C++ pra ter acesso rápido à funçãop de comprimento da string.
       if (str_seq.length() < 1) break;                   // Pra num precisar da bixiga de um try-catch por causa da string vazia na última iteração do laço.
-      std::cout << "Ordenando [" << str_seq << "]:\n";   // DEBUG: Exibe o que vai ser ordenado.
+      std::cout << "Ordenando " << str_seq << " ...\n";  // DEBUG: Exibe o que vai ser ordenado.
 
       //int teams[str_seq.length()];
       std::vector<int> teams;                    // Vetor para colocar os times na ordem de leitura da sequência atual da instância.
@@ -216,14 +216,14 @@ int main(int argc, char* argv[]) {
       solution = orderTeams(teams, -1, solution, victories);
 
       // DEBUG: Teste de construção da entrada.
-      std::cout << "\nEntrada: ";
+      std::cout << "Entrada interpretada: [";
       for (int val : teams) std::cout << " " << val;
-      std::cout << '\n';
+      std::cout << " ]\n";
 
       // DEBUG: Deixa eu ver essa merda.
-      std::cout << "Resultado: ";
+      std::cout << "Resultado: [";
       for (int val : solution) std::cout << " " << val;
-      std::cout << '\n';
+      std::cout << " ]\n";
 
    }
 
